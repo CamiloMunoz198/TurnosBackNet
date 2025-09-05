@@ -16,5 +16,9 @@ namespace TurnosBackNet.Controllers.API
         [HttpPost("GenerarTurnos")]
         public override async Task<IActionResult> GenerarTurnosSV(AgendamientoEN agendamientoEN)
             => await base.GenerarTurnosSV(agendamientoEN);
+
+        [HttpGet("CargarServicios/{idComercio}" )]
+        public override async Task<IActionResult> CargarServiciosSV([FromRoute] int idComercio)
+            => await base.CargarServiciosSV(idComercio);
     }
 }

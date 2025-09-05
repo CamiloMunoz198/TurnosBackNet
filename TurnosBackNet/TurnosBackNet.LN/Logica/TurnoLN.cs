@@ -52,5 +52,54 @@ namespace TurnoBackNet.LN.Logica
                 respuestas.Error500($"Error al consultar Turno en ConsultarTurnoLN:{ex.Message}");
             }
         }
+
+        public async Task CargarServiciosLN(ConsultaComercioEN comercioEN)
+        {
+            // Lógica para crear un pedido
+            try
+            {
+                using (TurnosDBContextAD TurnoDBContextAD = accesoDatos.ObtenerCadenaTurnos(configuration, environment))
+                {
+                    try
+                    {
+                        var Servicios = TurnoDBContextAD.Servicios.Where(t => t.IdComercio == comercioEN.IdComercio)
+                            .AsNoTracking()
+                            .OrderBy(t => t.IdServicio)
+                            .Include(c => c.IdComercioNavigation)
+
+                            .Select(p => new
+                            {
+                                p.IdServicio,
+                                p.NomServicio,
+                                p.HoraApertura,
+                                p.HoraCierre,
+                                p.Duracion,
+                                p.IdComercio,
+                                NomComercio = p.IdComercioNavigation != null ? p.IdComercioNavigation.NomComercio : "Nombre de Comercio Desconocido",
+                                AforoMaximo = p.IdComercioNavigation != null ? p.IdComercioNavigation.AforoMaximo : 0
+                            })
+                            .ToList();
+
+
+                        if (Servicios.Any())
+                        {
+                            respuestas.Respuesta.Add("Servicios", Servicios);
+                        }
+                        else
+                        {
+                            respuestas.NoEncontrado("No se pudieron consultar los  Servicios para el Comercio solicitado");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        respuestas.Fallido($"Error Al Generar y Consultar los Servicios En DB.{ex.Message}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                respuestas.Error500($"Error al consultar Turno en ConsultarTurnoLN:{ex.Message}");
+            }
+        }
     }
 }

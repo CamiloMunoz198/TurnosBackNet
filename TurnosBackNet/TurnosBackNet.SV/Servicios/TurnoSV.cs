@@ -26,5 +26,24 @@ namespace TurnosBackNet.SV.Servicios
                 return StatusCode(500, new Dictionary<string, object>() { { "Mensaje", $"Error al consultar el metodo GenerarTurnosSV:{ex.Message}" } });
             }
         }
+
+        public virtual async Task<IActionResult> CargarServiciosSV(int idComercio)
+        {
+            try
+            {
+                ConsultaComercioEN comercioEN = new ConsultaComercioEN
+                {
+                    IdComercio = idComercio
+                };
+                TurnoLN = new TurnoLN(configuration, environment);
+                await TurnoLN.CargarServiciosLN(comercioEN);
+                return StatusCode(TurnoLN.respuestas.Estado, TurnoLN.respuestas);
+            }
+            catch (Exception ex)
+            {
+                //Agregar un log de error aquí si es necesario con mensajes más detallados por correo
+                return StatusCode(500, new Dictionary<string, object>() { { "Mensaje", $"Error al consultar el metodo CargarServiciosSV:{ex.Message}" } });
+            }
+        }
     }
 }
